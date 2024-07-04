@@ -1,54 +1,70 @@
-from math import sqrt
+# vectors from chfpter-4
 
-def add(v: list, w: list) -> list:
-    assert len(v) == len(w)
-    return [v_i + w_i for v_i, w_i in zip(v,w)]
-assert add([1, 2, 3], [4, 5, 6]) == [5, 7, 9]
+import math
 
-def substract(v: list, w: list) -> list:
-    assert len(v) == len(w)
-    return [v_i - w_i for v_i, w_i in zip(v,w)]
-assert substract([5,6,7],[1,2,3]) == [4,4,4]
+def add(l1: list, l2: list) -> list:
+    # (l1, l2 -> list) = vectors
+    assert len(l1) == len(l2)
+    return [x + y for x, y in zip(l1, l2)] # add([1,2,3],[4,5,6]) => return [1+4,2+5,6+3] => return [5,7,9] <- vector
+assert add([1,2,3],[4,5,6]) == [5,7,9]
 
-def vector_sum(v: list) -> list:
-    assert v
+def substract(l1: list, l2: list) -> list:
+    # (l1,l2 -> list) = vectors
+    assert len(l1) == len(l2)
+    return [x - y for x, y in zip(l1,l2)] # substract([4,5,6],[1,2,3]) => return [4-1,5-2,6-3] => return [3,3,3] <- vector
+assert substract([4,5,6],[1,2,3]) == [3,3,3]
 
-    num_elements = len(v[0])
-    assert all(len(v) == num_elements for v in v)
+def vector_sum(l: list) -> list:
+    # (l, list) = vectors
+    assert l # if l is empty -> assert error | list not empty
+    return [sum(v[i] for v in l) for i in range(len(l[0]))] # [[1,2],[3,4],[5,6]] -> [1+3+5,2+4+6] = [9,12]
+assert vector_sum([[1,2],[3,4],[5,6]]) == [9,12]
 
-    return [sum(v[i] for v in v) for i in range(num_elements)]
-assert vector_sum([[1,2],[4,5],[6,7],[8,9]]) == [19,23]
+def scalar_multiply(s: float = 1, l: list = [1,2,3]) -> list:
+    # (list,list) = vectors
+    #s - scalar
+    # scalar_multiply(2,[1,2,3]) -> [2,4,6]
+    # list is not empty
+    return [s * v for v in l]
+assert scalar_multiply() == [1,2,3] # [1*1,1*2,1*3] = [1,2,3]
+assert scalar_multiply(2,[1,2,3]) == [2,4,6] # [2*1,2*2,2*3] = [2,4,6]
 
-def scalar_multiply(c: float, v: list) -> list:
-    return [c*v for v in v]
-assert scalar_multiply(5,[5,3,1]) == [25,15,5]
-
-def vector_mean(v: list) -> list:
-    n = len(v)
-    return scalar_multiply(1/n,vector_sum(v))
+def vector_mean(l: list) -> list:
+    # (l, list) = vectors
+    # mean([1,2],[3,4],[5,6]) => return [3,4]
+    assert l # list not empty
+    return scalar_multiply(1 / len(l), vector_sum(l)) # vector_mean([1,2],[3,4],[5,6]) => len(l) = 3, vector_sum = [1+3+5,2+4+6] = [9,12] => [9,12] * 1/3 -> [9/3,12/3] = [3,4]
 assert vector_mean([[1,2],[3,4],[5,6]]) == [3,4]
 
-def dot(v: list, w:list) -> float:
-    assert len(v) == len(w)
-    return sum(v_i * w_i for v_i,w_i in zip(v,w))
-assert dot([1,3,5],[4,6,7]) ==  57 #1*4 + 3*6 + 5*7 = 4+18+35=22+35=37+20=57
+def dot(l1: list, l2: list) -> float:
+    # (l1,l2) = vectors
+    # float - result
+    assert len(l1) == len(l2)
+    return sum([x * y for x,y in zip(l1,l2)])
+assert dot([1,2,3],[4,5,6]) == 32 # 1*4 + 2*5 + 6*3 = 4+10+18 = 28 + 4 = 32
 
-def sum_of_squares(v: list) -> float:
-    return dot(v,v)
-assert sum_of_squares([1,2,3]) == 14 #1*1+2*2+3*3 = 1+4+9=13+1=14
+def sum_of_squares(l: list) -> float:
+    # l = vector
+    # float = result dot(l,l)
+    assert l
+    return dot(l,l)
+assert sum_of_squares([1,2,3]) == 14 # 1*1 + 2*2 + 3*3 = 1+ 4 + 9 = 13+1 = 14
 
-def magnitude(v: list) -> float:
-    return sqrt(sum_of_squares(v))
-assert magnitude([3,4]) == 5 #3*3+4*4=9+16=25 / sqrt(25) = 5 !!!!!!!!!!!!!!!1
+def magnitude(l: list) -> float:
+    assert l
+    return math.sqrt(sum_of_squares(l))
+assert magnitude([1,2,3]) == math.sqrt(14) # 1*1 + 2*2 + 3*3 = 14 | res = sqrt(14)
 
-def square_distance(v: list, w: list) -> list:
-    return sum_of_squares(substract(v,w))
-assert square_distance([5,4],[2,1]) == 18 #sqrt(18)^2=18
+def squared_distance(l1: list, l2: list) -> float:
+    assert len(l1) == len(l2) 
+    return sum_of_squares(substract(l1,l2))
+assert squared_distance([4,5,6],[1,2,3]) == 27 # 4-1, 5-2, 6-3 = [3,3,3] => 3*3+3*3+3*3 = 9 * 3 = 27
 
-def distance(v: list, w: list) -> list:
-    return sqrt(square_distance(v,w))
-assert distance([5,4],[2,1]) == sqrt(18)
+def distance(l1: list,l2: list) -> float:
+    assert len(l1) == len(l2)
+    return math.sqrt(squared_distance(l1,l2))
+assert distance([4,5,6],[1,2,3]) == math.sqrt(27) 
 
-def distance_upgrade(v: list,w: list) -> list:
-    return magnitude(substract(v,w))
-assert distance_upgrade([5,4],[2,1]) == sqrt(18) #5-2=3 / 4-1=3 -> sqrt(3*3+3*3=9+9=18) = sqrt(18) 
+def distance_from_magnitude(l1: list, l2: list) -> float:
+    return magnitude(substract(l1,l2))
+assert distance_from_magnitude([4,5,6],[1,2,3]) == math.sqrt(27) 
