@@ -1,4 +1,4 @@
-# vectors from chfpter-4
+# vectors from chapter-4
 
 import math
 
