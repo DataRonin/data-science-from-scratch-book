@@ -31,4 +31,48 @@ def knn_classify(k: int, labeled_points: list, new_point: list) -> str:
     return majority_vote(k_nearest_labels)
 
 # iris
-# I'll add the code tomorrow
+# file - iris.data | link - https://archive.ics.uci.edu/dataset/53/iris
+
+from typing import Dict
+import csv
+from collections import defaultdict
+
+def parse_iris_row(row: list) -> LabeledPoint:
+    measurements = [float(value) for value in row[:-1]]
+    label = row[-1].split('-')[-1]
+    return LabeledPoint(measurements,label)
+
+with open('iris.data') as f:
+    reader = csv.reader(f)
+    iris_data = [parse_iris_row(row) for row in reader if len(row)>0]
+
+points_by_species: Dict[str,list] = defaultdict(list)
+
+for iris in iris_data:
+    points_by_species[iris.label].append(iris.point)
+
+import random
+import ml
+
+random.seed(12)
+iris_train, iris_test = ml.split_data(iris_data, 0.7)
+
+assert len(iris_train) == 0.7 * 150
+assert len(iris_test) == 0.3 * 150
+
+from typing import Tuple
+
+confusion_matrix: Dict[Tuple[str,str], int] = defaultdict(int)
+num_correct = 0 
+
+for iris in iris_data:
+
+    predicted = knn_classify(5,iris_train,iris.point)
+    actual = iris.label
+
+    if predicted == actual:
+        num_correct+=1
+
+pct_correct = num_correct / len(iris_test)
+
+print(pct_correct, confusion_matrix)
